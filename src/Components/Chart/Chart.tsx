@@ -1,5 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { useWeatherData } from '../../Hooks/useFetchData';
+import { createScales } from '../../Utils/createScales';
+import { drawData } from '../../Utils/drawData';
+import { createAxis } from '../../Utils/createAxis';
+
 // import styles from './Chart.module.scss';
 import * as d3 from 'd3';
 // import { Selection, easeElastic } from 'd3';
@@ -32,53 +36,12 @@ const Chart: React.FC = () => {
     if (!data) {
       return;
     }
-    const xScale = d3
-      .scaleBand()
-      .domain(data.date)
-      .range([0, chartDimensions.width])
-      .paddingInner(0.3);
-    const yScale = d3
-      .scaleLinear()
-      .domain([0, Math.max(...data.temperature)])
-      .range([0, chartDimensions.height / 2]);
-
-    for (let i = 0; i < data.date.length; i++) {
-      ctx.fillStyle = 'red';
-      ctx.fillRect(
-        xScale(data.date[i])! + canvasDimensions.marginLeft,
-        canvasDimensions.height / 2,
-        xScale.bandwidth(),
-        yScale(-data.temperature[i])
-      );
-    }
-    ctx.moveTo(
-      canvasDimensions.marginLeft,
-      canvasDimensions.height - canvasDimensions.marginBot
-    );
-    ctx.lineTo(canvasDimensions.marginLeft, canvasDimensions.marginBot);
-    ctx.stroke();
-    yScale.ticks(5).forEach((tick, i) => {
-      ctx.fillStyle = 'black';
-      ctx.font = '17px Arial';
-      if (i === 0) {
-        ctx.fillText(
-          `${tick}`,
-          canvasDimensions.marginLeft - 30,
-          canvasDimensions.height / 2
-        );
-      } else {
-        ctx.fillText(
-          `${tick}`,
-          canvasDimensions.marginLeft - 30,
-          canvasDimensions.height / 2 - yScale(tick)
-        );
-        ctx.fillText(
-          `-${tick}`,
-          canvasDimensions.marginLeft - 30,
-          canvasDimensions.height / 2 + yScale(tick)
-        );
-      }
-    });
+    // create scales
+    const { xScale, yScale } = createScales(data, chartDimensions);
+    // axis
+    createAxis(canvasDimensions, ctx, yScale);
+    // visualize data
+    drawData(xScale, yScale, data, canvasDimensions, ctx);
   }, [data]);
 
   const clickHandler = (): void => {
@@ -86,7 +49,7 @@ const Chart: React.FC = () => {
       return {
         temperature: [
           ...prevState!.temperature,
-          Math.floor(Math.random() * 20 + 1),
+          Math.floor(Math.random() * 35 + 1),
         ],
         date: [
           ...prevState!.date,
