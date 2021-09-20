@@ -1,14 +1,28 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useMemo,
+  useState,
+  ChangeEvent,
+  SyntheticEvent,
+} from 'react';
 import { useWeatherData } from '../../Hooks/useFetchData';
 import { createScales } from '../../Utils/createScales';
 import { drawData } from '../../Utils/drawData';
 import { createAxis } from '../../Utils/createAxis';
 // import styles from './Chart.module.scss';
+interface Period {
+  start: Date;
+  end: Date;
+}
 
 const Chart: React.FC = () => {
+  const [period, setPeriod] = useState<null | Period>(null);
   const URL =
-    'https://gist.githubusercontent.com/Sir-Unkie/f04d65ed2c54fcd35f77ae669cf66882/raw/8b134cc6451557ad17753911ff45e75c219aed64/Weather.JSON';
+    'https://gist.githubusercontent.com/Sir-Unkie/f04d65ed2c54fcd35f77ae669cf66882/raw/1d330ab37acec52cdb34c6e08fc8a642c17d6aa4/Weather.JSON';
   const { data, setData } = useWeatherData(URL);
+  const [dateStart, setDateStart] = useState<string | number>('');
+  const [dateEnd, setDateEnd] = useState<string | number>('');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasDimensions = useMemo(() => {
     return {
@@ -38,27 +52,32 @@ const Chart: React.FC = () => {
       return;
     }
 
-    const { xScale, yScale } = createScales(data, chartDimensions);
-    createAxis(canvasDimensions, ctx, yScale, xScale);
-    drawData(xScale, yScale, data, canvasDimensions, ctx);
-  }, [data, canvasDimensions, chartDimensions]);
+    if (!period) {
+      const { xScale, yScale } = createScales(data, chartDimensions);
+      createAxis(canvasDimensions, ctx, yScale, xScale);
+      drawData(xScale, yScale, data, canvasDimensions, ctx);
+    } else {
+      const { xScale, yScale } = createScales(
+        data,
+        chartDimensions,
+        period.start,
+        period.end
+      );
+      createAxis(canvasDimensions, ctx, yScale, xScale);
+      drawData(xScale, yScale, data, canvasDimensions, ctx);
+    }
+  }, [data, canvasDimensions, chartDimensions, period]);
 
-  const addDataHandler = (): void => {
-    setData(prevState => {
-      let minus;
-      Math.random() > 0.5 ? (minus = -1) : (minus = 1);
-      return {
-        temperature: [
-          ...prevState!.temperature,
-          minus * Math.floor(Math.random() * 35 + 1),
-        ],
-        date: [
-          ...prevState!.date,
-          `${Math.floor(Math.random() * 30 + 1)}.${Math.floor(
-            Math.random() * 11 + 1
-          )}.2021`,
-        ],
-      };
+  const dateStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDateStart(e.target.value);
+  };
+  const dateEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDateEnd(e.target.value);
+  };
+  const addDataHandler = () => {
+    setPeriod({
+      start: new Date(dateStart),
+      end: new Date(dateEnd),
     });
   };
 
@@ -66,6 +85,20 @@ const Chart: React.FC = () => {
     <div>
       <canvas ref={canvasRef}></canvas>
       <br />
+      <input
+        type='date'
+        id='date1'
+        placeholder='start date'
+        onChange={dateStartChange}
+        value={dateStart}
+      ></input>
+      <input
+        type='date'
+        id='date2'
+        placeholder='end date'
+        value={dateEnd}
+        onChange={dateEndChange}
+      ></input>
       <button onClick={addDataHandler}>add 1</button>
     </div>
   );

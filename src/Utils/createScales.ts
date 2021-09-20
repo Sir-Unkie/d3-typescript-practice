@@ -7,12 +7,15 @@ interface ChartDimensions {
 }
 export const createScales = (
   data: WeatherData,
-  chartDimensions: ChartDimensions
+  chartDimensions: ChartDimensions,
+  domainStart: Date = new Date('01.01.2021'),
+  domainEnd: Date = new Date('12.01.2021')
 ) => {
   const timeArray = data.date.map(dateString => new Date(dateString));
+
   const xScale = d3
     .scaleTime()
-    .domain([timeArray[1], timeArray[timeArray.length - 1]])
+    .domain([domainStart, domainEnd])
     .range([0, chartDimensions.width]);
 
   console.log(xScale.domain());
