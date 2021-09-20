@@ -12,7 +12,7 @@ const Chart: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasDimensions = useMemo(() => {
     return {
-      width: 500,
+      width: 1300,
       height: 500,
       marginBot: 50,
       marginLeft: 50,
@@ -32,7 +32,7 @@ const Chart: React.FC = () => {
     canvas.width = canvasDimensions.width;
     canvas.height = canvasDimensions.height;
     const ctx = canvas.getContext('2d')!;
-    ctx.fillStyle = '#d4d4d4';
+    ctx.fillStyle = '#d8dfff';
     ctx.fillRect(0, 0, canvasDimensions.width, canvasDimensions.height);
     if (!data) {
       return;

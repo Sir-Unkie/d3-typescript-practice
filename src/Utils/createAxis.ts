@@ -18,25 +18,22 @@ export const createAxis = (
   ctx.stroke();
 
   // horizontal ticks
-  console.log(xScale.domain());
   xScale.domain().forEach((date, index) => {
     ctx.font = `${fontSize}px Arial`;
     ctx.fillStyle = 'black';
 
-    console.log(xScale(date));
-    console.log(date);
     ctx.save();
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
     ctx.fillText(
       `${date}`,
-      -canvasDimensions.width / 2 - canvasDimensions.marginLeft,
-      xScale(date)! + canvasDimensions.marginBot + fontSize
+      -canvasDimensions.height / 2 - canvasDimensions.marginBot,
+      xScale(date)! + canvasDimensions.marginLeft + xScale.bandwidth() / 2
     );
     ctx.restore();
   });
   //vertical ticks and horizontal additional axis
-  yScale.ticks(4).forEach((tick, i) => {
+  yScale.ticks(5).forEach((tick, i) => {
     ctx.fillStyle = 'black';
     ctx.textAlign = 'right';
     ctx.font = `${fontSize}px Arial`;
