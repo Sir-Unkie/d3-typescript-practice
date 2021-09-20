@@ -1,14 +1,10 @@
 import { CanvasDimensions } from './interfaces';
 import { ScaleLinear, ScaleBand } from 'd3';
 
-export const createAxis = (
+const createYmainAxis = (
   canvasDimensions: CanvasDimensions,
-  ctx: CanvasRenderingContext2D,
-  yScale: ScaleLinear<number, number, never>,
-  xScale: ScaleBand<string>
+  ctx: CanvasRenderingContext2D
 ) => {
-  const fontSize = 17;
-  // vertical main axis
   ctx.moveTo(
     canvasDimensions.marginLeft,
     canvasDimensions.height - canvasDimensions.marginBot
@@ -16,8 +12,13 @@ export const createAxis = (
   ctx.lineTo(canvasDimensions.marginLeft, canvasDimensions.marginBot);
   ctx.strokeStyle = 'black';
   ctx.stroke();
-
-  // horizontal ticks
+};
+const createXAxisTicks = (
+  canvasDimensions: CanvasDimensions,
+  ctx: CanvasRenderingContext2D,
+  xScale: ScaleBand<string>,
+  fontSize: number
+) => {
   xScale.domain().forEach((date, index) => {
     ctx.font = `${fontSize}px Arial`;
     ctx.fillStyle = 'black';
@@ -28,10 +29,22 @@ export const createAxis = (
     ctx.fillText(
       `${date}`,
       -canvasDimensions.height / 2 - canvasDimensions.marginBot,
-      xScale(date)! + canvasDimensions.marginLeft + xScale.bandwidth() / 2
+      xScale(date)! +
+        canvasDimensions.marginLeft +
+        xScale.bandwidth() / 2 +
+        fontSize / 4
     );
     ctx.restore();
   });
+};
+
+const createHorizontalLinesWithYaxisTicks = (
+  canvasDimensions: CanvasDimensions,
+  ctx: CanvasRenderingContext2D,
+  yScale: ScaleLinear<number, number, never>,
+  xScale: ScaleBand<string>,
+  fontSize: number
+) => {
   //vertical ticks and horizontal additional axis
   yScale.ticks(5).forEach((tick, i) => {
     ctx.fillStyle = 'black';
@@ -91,4 +104,24 @@ export const createAxis = (
       );
     }
   });
+};
+
+export const createAxis = (
+  canvasDimensions: CanvasDimensions,
+  ctx: CanvasRenderingContext2D,
+  yScale: ScaleLinear<number, number, never>,
+  xScale: ScaleBand<string>
+) => {
+  const fontSize = 17;
+  createYmainAxis(canvasDimensions, ctx);
+
+  createXAxisTicks(canvasDimensions, ctx, xScale, fontSize);
+
+  createHorizontalLinesWithYaxisTicks(
+    canvasDimensions,
+    ctx,
+    yScale,
+    xScale,
+    fontSize
+  );
 };

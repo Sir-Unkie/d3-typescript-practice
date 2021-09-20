@@ -37,15 +37,13 @@ const Chart: React.FC = () => {
     if (!data) {
       return;
     }
-    // create scales
+
     const { xScale, yScale } = createScales(data, chartDimensions);
-    // axis
     createAxis(canvasDimensions, ctx, yScale, xScale);
-    // visualize data
     drawData(xScale, yScale, data, canvasDimensions, ctx);
   }, [data, canvasDimensions, chartDimensions]);
 
-  const clickHandler = (): void => {
+  const addDataHandler = (): void => {
     setData(prevState => {
       let minus;
       Math.random() > 0.5 ? (minus = -1) : (minus = 1);
@@ -68,7 +66,7 @@ const Chart: React.FC = () => {
     <div>
       <canvas ref={canvasRef}></canvas>
       <br />
-      <button onClick={clickHandler}>add 1</button>
+      <button onClick={addDataHandler}>add 1</button>
     </div>
   );
 };
