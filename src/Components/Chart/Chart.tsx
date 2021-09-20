@@ -7,12 +7,12 @@ import { createAxis } from '../../Utils/createAxis';
 
 const Chart: React.FC = () => {
   const URL =
-    'https://gist.githubusercontent.com/Sir-Unkie/f04d65ed2c54fcd35f77ae669cf66882/raw/1a7d9fb0c1adf6eaf1c1e5deeffc7123c6bd9eaa/Weather.JSON';
+    'https://gist.githubusercontent.com/Sir-Unkie/f04d65ed2c54fcd35f77ae669cf66882/raw/8b134cc6451557ad17753911ff45e75c219aed64/Weather.JSON';
   const { data, setData } = useWeatherData(URL);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasDimensions = useMemo(() => {
     return {
-      width: 1300,
+      width: 700,
       height: 500,
       marginBot: 50,
       marginLeft: 50,

@@ -1,5 +1,5 @@
 import { CanvasDimensions } from './interfaces';
-import { ScaleLinear, ScaleBand } from 'd3';
+import { ScaleLinear, ScaleTime } from 'd3';
 
 const createYmainAxis = (
   canvasDimensions: CanvasDimensions,
@@ -16,25 +16,27 @@ const createYmainAxis = (
 const createXAxisTicks = (
   canvasDimensions: CanvasDimensions,
   ctx: CanvasRenderingContext2D,
-  xScale: ScaleBand<string>,
+  xScale: ScaleTime<number, number, never>,
   fontSize: number
 ) => {
-  xScale.domain().forEach((date, index) => {
-    ctx.font = `${fontSize}px Arial`;
+  //   xScale.domain().forEach((date, index) => {
+  //     ctx.font = `${fontSize / 2}px Arial`;
+  //     ctx.fillStyle = 'black';
+
+  //     ctx.textAlign = 'left';
+  //     ctx.fillText(`${date}`, xScale(date), canvasDimensions.height / 2);
+  //   });
+  console.log(xScale.ticks(6));
+  xScale.ticks(12).forEach(timeTick => {
+    ctx.font = `${fontSize / 1}px Arial`;
     ctx.fillStyle = 'black';
 
-    ctx.save();
-    ctx.rotate(-Math.PI / 2);
-    ctx.textAlign = 'center';
+    ctx.textAlign = 'left';
     ctx.fillText(
-      `${date}`,
-      -canvasDimensions.height / 2 - canvasDimensions.marginBot,
-      xScale(date)! +
-        canvasDimensions.marginLeft +
-        xScale.bandwidth() / 2 +
-        fontSize / 4
+      `${timeTick.getMonth() + 1}`,
+      xScale(timeTick) + canvasDimensions.marginLeft,
+      canvasDimensions.height - canvasDimensions.marginBot
     );
-    ctx.restore();
   });
 };
 
@@ -42,7 +44,7 @@ const createHorizontalLinesWithYaxisTicks = (
   canvasDimensions: CanvasDimensions,
   ctx: CanvasRenderingContext2D,
   yScale: ScaleLinear<number, number, never>,
-  xScale: ScaleBand<string>,
+  xScale: ScaleTime<number, number, never>,
   fontSize: number
 ) => {
   //vertical ticks and horizontal additional axis
@@ -110,7 +112,7 @@ export const createAxis = (
   canvasDimensions: CanvasDimensions,
   ctx: CanvasRenderingContext2D,
   yScale: ScaleLinear<number, number, never>,
-  xScale: ScaleBand<string>
+  xScale: ScaleTime<number, number, never>
 ) => {
   const fontSize = 17;
   createYmainAxis(canvasDimensions, ctx);
