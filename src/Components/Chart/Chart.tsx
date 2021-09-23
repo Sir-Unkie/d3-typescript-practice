@@ -1,11 +1,4 @@
-import React, {
-  useRef,
-  useEffect,
-  useMemo,
-  useState,
-  ChangeEvent,
-  SyntheticEvent,
-} from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useWeatherData } from '../../Hooks/useFetchData';
 import { createScales } from '../../Utils/createScales';
 import { drawData } from '../../Utils/drawData';
@@ -17,7 +10,10 @@ interface Period {
 }
 
 const Chart: React.FC = () => {
-  const [period, setPeriod] = useState<null | Period>(null);
+  const [period, setPeriod] = useState<Period>({
+    start: new Date('01.01.2021'),
+    end: new Date('12.31.2021'),
+  });
   const URL =
     'https://gist.githubusercontent.com/Sir-Unkie/f04d65ed2c54fcd35f77ae669cf66882/raw/1d330ab37acec52cdb34c6e08fc8a642c17d6aa4/Weather.JSON';
   const { data, setData } = useWeatherData(URL);
@@ -52,20 +48,14 @@ const Chart: React.FC = () => {
       return;
     }
 
-    if (!period) {
-      const { xScale, yScale } = createScales(data, chartDimensions);
-      createAxis(canvasDimensions, ctx, yScale, xScale);
-      drawData(xScale, yScale, data, canvasDimensions, ctx);
-    } else {
-      const { xScale, yScale } = createScales(
-        data,
-        chartDimensions,
-        period.start,
-        period.end
-      );
-      createAxis(canvasDimensions, ctx, yScale, xScale);
-      drawData(xScale, yScale, data, canvasDimensions, ctx);
-    }
+    const { xScale, yScale } = createScales(
+      data,
+      chartDimensions,
+      period.start,
+      period.end
+    );
+    createAxis(canvasDimensions, ctx, yScale, xScale, period.start, period.end);
+    drawData(xScale, yScale, data, canvasDimensions, ctx, period.end);
   }, [data, canvasDimensions, chartDimensions, period]);
 
   const dateStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,14 +78,12 @@ const Chart: React.FC = () => {
       <input
         type='date'
         id='date1'
-        placeholder='start date'
         onChange={dateStartChange}
         value={dateStart}
       ></input>
       <input
         type='date'
         id='date2'
-        placeholder='end date'
         value={dateEnd}
         onChange={dateEndChange}
       ></input>

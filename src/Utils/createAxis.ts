@@ -13,21 +13,66 @@ const createYmainAxis = (
   ctx.strokeStyle = 'black';
   ctx.stroke();
 };
+
+const createXmainAxis = (
+  canvasDimensions: CanvasDimensions,
+  ctx: CanvasRenderingContext2D
+) => {
+  ctx.beginPath();
+  ctx.strokeStyle = 'black';
+  ctx.moveTo(canvasDimensions.marginLeft, canvasDimensions.height / 2);
+  ctx.lineTo(
+    canvasDimensions.width - canvasDimensions.marginLeft,
+    canvasDimensions.height / 2
+  );
+  ctx.stroke();
+};
+
+const createYaxisTicks = (
+  canvasDimensions: CanvasDimensions,
+  ctx: CanvasRenderingContext2D,
+  yScale: ScaleLinear<number, number, never>,
+  fontSize: number
+) => {
+  //vertical ticks and horizontal additional axis
+  yScale.ticks(5).forEach((tick, i) => {
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'right';
+    ctx.font = `${fontSize}px Arial`;
+    if (i === 0) {
+      ctx.fillText(
+        `${tick}`,
+        canvasDimensions.marginLeft - 15,
+        canvasDimensions.height / 2
+      );
+    } else {
+      // top axis ticks
+      ctx.fillText(
+        `${tick}`,
+        canvasDimensions.marginLeft - 15,
+        canvasDimensions.height / 2 - yScale(tick) + fontSize / 4
+      );
+      // bottom axis ticks
+      ctx.fillText(
+        `-${tick}`,
+        canvasDimensions.marginLeft - 15,
+        canvasDimensions.height / 2 + yScale(tick) + fontSize / 4
+      );
+    }
+  });
+};
+
 const createXAxisTicks = (
   canvasDimensions: CanvasDimensions,
   ctx: CanvasRenderingContext2D,
   xScale: ScaleTime<number, number, never>,
-  fontSize: number
+  fontSize: number,
+  domainStart: Date = new Date('01.01.2021'),
+  domainEnd: Date = new Date('12.01.2021')
 ) => {
-  //   xScale.domain().forEach((date, index) => {
-  //     ctx.font = `${fontSize / 2}px Arial`;
-  //     ctx.fillStyle = 'black';
-
-  //     ctx.textAlign = 'left';
-  //     ctx.fillText(`${date}`, xScale(date), canvasDimensions.height / 2);
-  //   });
-  console.log(xScale.ticks(6));
-  xScale.ticks(12).forEach(timeTick => {
+  const ticksAmount = domainEnd.getMonth() - domainStart.getMonth() + 1;
+  console.log(ticksAmount);
+  xScale.ticks(ticksAmount).forEach(timeTick => {
     ctx.font = `${fontSize / 1}px Arial`;
     ctx.fillStyle = 'black';
 
@@ -40,41 +85,15 @@ const createXAxisTicks = (
   });
 };
 
-const createHorizontalLinesWithYaxisTicks = (
+const createHorizontalLines = (
   canvasDimensions: CanvasDimensions,
   ctx: CanvasRenderingContext2D,
-  yScale: ScaleLinear<number, number, never>,
-  xScale: ScaleTime<number, number, never>,
-  fontSize: number
+  yScale: ScaleLinear<number, number, never>
 ) => {
-  //vertical ticks and horizontal additional axis
   yScale.ticks(5).forEach((tick, i) => {
-    ctx.fillStyle = 'black';
-    ctx.textAlign = 'right';
-    ctx.font = `${fontSize}px Arial`;
     if (i === 0) {
-      // main horizontal axis
-      ctx.fillText(
-        `${tick}`,
-        canvasDimensions.marginLeft - 15,
-        canvasDimensions.height / 2
-      );
-      // main horizontal axis
-      ctx.beginPath();
-      ctx.strokeStyle = 'black';
-      ctx.moveTo(canvasDimensions.marginLeft, canvasDimensions.height / 2);
-      ctx.lineTo(
-        canvasDimensions.width - canvasDimensions.marginLeft,
-        canvasDimensions.height / 2
-      );
-      ctx.stroke();
     } else {
-      ctx.fillText(
-        `${tick}`,
-        canvasDimensions.marginLeft - 15,
-        canvasDimensions.height / 2 - yScale(tick) + fontSize / 4
-      );
-      // additional axis on top
+      // additional lines on top
       ctx.beginPath();
       ctx.moveTo(
         canvasDimensions.marginLeft - 2,
@@ -86,7 +105,7 @@ const createHorizontalLinesWithYaxisTicks = (
         canvasDimensions.height / 2 - yScale(tick)
       );
       ctx.stroke();
-      // additional axis on bottom
+      // additional bottom lines
       ctx.beginPath();
       ctx.moveTo(
         canvasDimensions.marginLeft - 2,
@@ -98,12 +117,6 @@ const createHorizontalLinesWithYaxisTicks = (
         canvasDimensions.height / 2 + yScale(tick)
       );
       ctx.stroke();
-      // bottom text ticks
-      ctx.fillText(
-        `-${tick}`,
-        canvasDimensions.marginLeft - 15,
-        canvasDimensions.height / 2 + yScale(tick) + fontSize / 4
-      );
     }
   });
 };
@@ -112,18 +125,22 @@ export const createAxis = (
   canvasDimensions: CanvasDimensions,
   ctx: CanvasRenderingContext2D,
   yScale: ScaleLinear<number, number, never>,
-  xScale: ScaleTime<number, number, never>
+  xScale: ScaleTime<number, number, never>,
+  domainStart: Date,
+  domainEnd: Date
 ) => {
   const fontSize = 17;
   createYmainAxis(canvasDimensions, ctx);
-
-  createXAxisTicks(canvasDimensions, ctx, xScale, fontSize);
-
-  createHorizontalLinesWithYaxisTicks(
+  createYaxisTicks(canvasDimensions, ctx, yScale, fontSize);
+  createXmainAxis(canvasDimensions, ctx);
+  createXAxisTicks(
     canvasDimensions,
     ctx,
-    yScale,
     xScale,
-    fontSize
+    fontSize,
+    domainStart,
+    domainEnd
   );
+
+  createHorizontalLines(canvasDimensions, ctx, yScale);
 };

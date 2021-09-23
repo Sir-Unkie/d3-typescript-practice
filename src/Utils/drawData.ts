@@ -8,15 +8,21 @@ export const drawData = (
   yScale: ScaleLinear<number, number, never>,
   data: WeatherData,
   canvasDimensions: CanvasDimensions,
-  ctx: CanvasRenderingContext2D
+  ctx: CanvasRenderingContext2D,
+  domainEnd: Date
 ) => {
   for (let i = 0; i < data.date.length; i++) {
     ctx.fillStyle = '#f3b43e';
-    ctx.fillRect(
-      xScale(new Date(data.date[i]))! + canvasDimensions.marginLeft,
-      canvasDimensions.height / 2,
-      15,
-      yScale(-data.temperature[i])
-    );
+    const dateInPeriod =
+      xScale(new Date(data.date[i]))! >= 0 &&
+      xScale(new Date(data.date[i]))! < xScale(domainEnd);
+    if (dateInPeriod) {
+      ctx.fillRect(
+        xScale(new Date(data.date[i]))! + canvasDimensions.marginLeft,
+        canvasDimensions.height / 2,
+        15,
+        yScale(-data.temperature[i])
+      );
+    }
   }
 };
