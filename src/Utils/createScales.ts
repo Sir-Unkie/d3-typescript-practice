@@ -1,10 +1,7 @@
 import * as d3 from 'd3';
 import { WeatherData } from '../Hooks/useFetchData';
+import { ChartDimensions } from './interfaces';
 
-interface ChartDimensions {
-  width: number;
-  height: number;
-}
 export const createScales = (
   data: WeatherData,
   chartDimensions: ChartDimensions,

@@ -3,11 +3,8 @@ import { useWeatherData } from '../../Hooks/useFetchData';
 import { createScales } from '../../Utils/createScales';
 import { drawData } from '../../Utils/drawData';
 import { createAxis } from '../../Utils/createAxis';
+import { Period } from '../../Utils/interfaces';
 // import styles from './Chart.module.scss';
-interface Period {
-  start: Date;
-  end: Date;
-}
 
 const Chart: React.FC = () => {
   const [period, setPeriod] = useState<Period>({
@@ -35,6 +32,7 @@ const Chart: React.FC = () => {
     };
   }, [canvasDimensions]);
   useEffect(() => {
+    // create canvas
     const canvas = canvasRef.current;
     if (!canvas) {
       return;
@@ -47,7 +45,7 @@ const Chart: React.FC = () => {
     if (!data) {
       return;
     }
-
+    // add sclaes and data
     const { xScale, yScale } = createScales(
       data,
       chartDimensions,
@@ -65,22 +63,28 @@ const Chart: React.FC = () => {
     setDateEnd(e.target.value);
   };
   const addDataHandler = () => {
-    setPeriod({
-      start: new Date(dateStart),
-      end: new Date(dateEnd),
-    });
+    if (dateEnd === '' || dateStart === '') {
+      alert('set both start and end date!');
+    } else {
+      setPeriod({
+        start: new Date(dateStart),
+        end: new Date(dateEnd),
+      });
+    }
   };
 
   return (
     <div>
       <canvas ref={canvasRef}></canvas>
       <br />
+      <label htmlFor='date1'>Start date</label>
       <input
         type='date'
         id='date1'
         onChange={dateStartChange}
         value={dateStart}
       ></input>
+      <label htmlFor='date2'>End date</label>
       <input
         type='date'
         id='date2'

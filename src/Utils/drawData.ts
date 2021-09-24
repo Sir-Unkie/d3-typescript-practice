@@ -1,4 +1,4 @@
-import { ScaleBand, ScaleLinear } from 'd3-scale';
+import { ScaleLinear } from 'd3-scale';
 import { WeatherData } from '../Hooks/useFetchData';
 import { CanvasDimensions } from './interfaces';
 import { ScaleTime } from 'd3';
