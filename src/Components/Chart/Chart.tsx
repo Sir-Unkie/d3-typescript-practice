@@ -13,7 +13,7 @@ const Chart: React.FC = () => {
   });
   const URL =
     'https://gist.githubusercontent.com/Sir-Unkie/f04d65ed2c54fcd35f77ae669cf66882/raw/1d330ab37acec52cdb34c6e08fc8a642c17d6aa4/Weather.JSON';
-  const { data, setData } = useWeatherData(URL);
+  const { data } = useWeatherData(URL);
   const [dateStart, setDateStart] = useState<string | number>('');
   const [dateEnd, setDateEnd] = useState<string | number>('');
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -52,8 +52,8 @@ const Chart: React.FC = () => {
       period.start,
       period.end
     );
-    createAxis(canvasDimensions, ctx, yScale, xScale, period.start, period.end);
     drawData(xScale, yScale, data, canvasDimensions, ctx, period.end);
+    createAxis(canvasDimensions, ctx, yScale, xScale, period.start, period.end);
   }, [data, canvasDimensions, chartDimensions, period]);
 
   const dateStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,19 +78,23 @@ const Chart: React.FC = () => {
       <canvas ref={canvasRef}></canvas>
       <br />
       <label htmlFor='date1'>Start date</label>
+      <br />
       <input
         type='date'
         id='date1'
         onChange={dateStartChange}
         value={dateStart}
       ></input>
+      <br />
       <label htmlFor='date2'>End date</label>
+      <br />
       <input
         type='date'
         id='date2'
         value={dateEnd}
         onChange={dateEndChange}
       ></input>
+      <br />
       <button onClick={addDataHandler}>add 1</button>
     </div>
   );

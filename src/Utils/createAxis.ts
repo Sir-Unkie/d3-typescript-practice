@@ -80,7 +80,7 @@ const createXAxisTicks = (
     ctx.fillText(
       `${timeTick.getMonth() + 1}`,
       xScale(timeTick) + canvasDimensions.marginLeft,
-      canvasDimensions.height - canvasDimensions.marginBot
+      canvasDimensions.height / 2 + fontSize
     );
   });
 };
